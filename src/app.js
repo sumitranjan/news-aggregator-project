@@ -14,11 +14,15 @@ function createApp(options = {}) {
   const users = options.users || repository;
   const news =
     options.news || createNewsService({ apiKey: process.env.NEWS_API_KEY });
+
   const app = express();
+
   app.disable("x-powered-by");
   app.use(helmet());
   app.use(express.json({ limit: "16kb" }));
+
   const auth = authenticate(users, secret);
+
   app.use(createUserRouter({ users, secret, auth }));
   app.use("/news", createNewsRouter({ news, auth }));
   app.use((req, res, next) => next(new HttpError(404, "Route not found")));

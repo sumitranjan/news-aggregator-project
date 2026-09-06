@@ -24,12 +24,12 @@ npm run test
 
 The server defaults to `http://localhost:3000`. It connects to MongoDB and initializes the unique email index before listening. Missing/short JWT secrets or database connection failures stop startup. Without a news key, news endpoints return 503; authentication and preferences still work.
 
-| Variable | Meaning |
-| --- | --- |
-| `PORT` | HTTP port, default 3000 |
-| `MONGODB_URI` | Required MongoDB connection URI |
-| `JWT_SECRET` | Required random signing secret, at least 32 characters |
-| `NEWS_API_KEY` | Required to retrieve live news |
+| Variable       | Meaning                                                |
+| -------------- | ------------------------------------------------------ |
+| `PORT`         | HTTP port, default 3000                                |
+| `MONGODB_URI`  | Required MongoDB connection URI                        |
+| `JWT_SECRET`   | Required random signing secret, at least 32 characters |
+| `NEWS_API_KEY` | Required to retrieve live news                         |
 
 ## Structure
 
@@ -51,14 +51,14 @@ test/                    API and service tests
 
 Send JSON bodies with `Content-Type: application/json`. Protected endpoints require `Authorization: Bearer <token>`.
 
-| Method | Path | Authentication | Success |
-| --- | --- | --- | --- |
-| POST | `/register` | Public | 201, `{ "user": { "id", "email", "name", "preferences" } }` |
-| POST | `/login` | Public | 200, `{ "token", "tokenType": "Bearer", "expiresIn": 3600 }` |
-| GET | `/preferences` | Required | 200, `{ "preferences": ... }` |
-| PUT | `/preferences` | Required | 200, updated preferences |
-| GET | `/news` | Required | 200, `{ "news": [...] }` |
-| GET | `/news/search/:keyword` | Required | 200, `{ "news": [...] }` |
+| Method | Path                    | Authentication | Success                                                      |
+| ------ | ----------------------- | -------------- | ------------------------------------------------------------ |
+| POST   | `/register`             | Public         | 201, `{ "user": { "id", "email", "name", "preferences" } }`  |
+| POST   | `/login`                | Public         | 200, `{ "token", "tokenType": "Bearer", "expiresIn": 3600 }` |
+| GET    | `/preferences`          | Required       | 200, `{ "preferences": ... }`                                |
+| PUT    | `/preferences`          | Required       | 200, updated preferences                                     |
+| GET    | `/news`                 | Required       | 200, `{ "news": [...] }`                                     |
+| GET    | `/news/search/:keyword` | Required       | 200, `{ "news": [...] }`                                     |
 
 Compatibility aliases: `/users/signup` (returns 200), `/users/login`, and `/users/preferences`.
 
@@ -69,7 +69,10 @@ Compatibility aliases: `/users/signup` (returns 200), `/users/login`, and `/user
   "name": "Clark Kent",
   "email": "clark@example.com",
   "password": "a-long-unique-password",
-  "preferences": { "categories": ["science", "technology"], "languages": ["en"] }
+  "preferences": {
+    "categories": ["science", "technology"],
+    "languages": ["en"]
+  }
 }
 ```
 
@@ -80,7 +83,12 @@ Name and initial preferences are optional. Email is normalized to lowercase. Pas
 PUT replaces the preferences with:
 
 ```json
-{ "preferences": { "categories": ["science", "sports"], "languages": ["en", "fr"] } }
+{
+  "preferences": {
+    "categories": ["science", "sports"],
+    "languages": ["en", "fr"]
+  }
+}
 ```
 
 Categories are topic keywords: up to 10 strings, each 1-30 ASCII letters, digits, spaces, or hyphens. Languages accept 1-3 codes from `ar de en es fr he it nl no pt ru sv ud zh`. Omitted categories default to `[]`; omitted languages default to `["en"]`. A legacy array such as `{ "preferences": ["movies", "comics"] }` is also supported and uses English.
@@ -95,18 +103,18 @@ Each cache miss makes one request per distinct preferred language, fetching up t
 
 Errors use `{ "error": { "message": "..." } }`.
 
-| Status | Meaning |
-| --- | --- |
-| 400 | Invalid/missing input or malformed JSON |
-| 401 | Missing, invalid, or expired token; invalid login |
-| 404 | Unknown route |
-| 409 | Email already registered |
-| 413 | JSON body exceeds 16 KB |
-| 429 | Authentication rate limit exceeded |
-| 500 | Unexpected internal failure |
-| 502 | News provider failed or returned an invalid response |
-| 503 | Missing news configuration or provider quota exhausted |
-| 504 | News provider timeout |
+| Status | Meaning                                                |
+| ------ | ------------------------------------------------------ |
+| 400    | Invalid/missing input or malformed JSON                |
+| 401    | Missing, invalid, or expired token; invalid login      |
+| 404    | Unknown route                                          |
+| 409    | Email already registered                               |
+| 413    | JSON body exceeds 16 KB                                |
+| 429    | Authentication rate limit exceeded                     |
+| 500    | Unexpected internal failure                            |
+| 502    | News provider failed or returned an invalid response   |
+| 503    | Missing news configuration or provider quota exhausted |
+| 504    | News provider timeout                                  |
 
 ## Testing and Deployment Notes
 
